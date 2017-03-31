@@ -23,7 +23,7 @@ InternetCrawler.prototype.crawl = function(internet) {
 
 InternetCrawler.prototype.visitPage = function(address) {
   if (this.isLinkParsed(address)) {
-    this.skipLink(address);
+    this.addSkippedLink(address);
     return;
   }
   var page = this.findPage(address);
@@ -46,7 +46,7 @@ InternetCrawler.prototype.crawlPage = function(page) {
       this.pagesCrawled.push(link);
     }
     if (this.isLinkParsed(link)) {
-      this.skipLink(link);
+      this.addSkippedLink(link);
     } else {
       unparsedLinks.push(link);
     }
@@ -54,7 +54,7 @@ InternetCrawler.prototype.crawlPage = function(page) {
   return unparsedLinks;
 };
 
-InternetCrawler.prototype.skipLink = function(link) {
+InternetCrawler.prototype.addSkippedLink = function(link) {
   if (this.pagesSkipped.indexOf(link) === -1) {
     this.pagesSkipped.push(link);
   }
