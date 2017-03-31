@@ -1,6 +1,6 @@
 function InternetCrawler() {}
 
-InternetCrawler.prototype.crawl = function crawl(internet) {
+InternetCrawler.prototype.crawl = function(internet) {
   this.internet = internet;
   this.pagesVisited = [];
   this.pagesSkipped = [];
@@ -21,7 +21,7 @@ InternetCrawler.prototype.crawl = function crawl(internet) {
   };
 };
 
-InternetCrawler.prototype.visitPage = function visitPage(address) {
+InternetCrawler.prototype.visitPage = function(address) {
   if (this.isLinkParsed(address)) {
     this.skipLink(address);
     return;
@@ -32,10 +32,13 @@ InternetCrawler.prototype.visitPage = function visitPage(address) {
     return;
   }
   this.pagesVisited.push(address);
-  this.crawlPage(page);
+  var unparsedLinks = this.crawlPage(page);
+  unparsedLinks.forEach(link => {
+    this.visitPage(link);
+  });
 };
 
-InternetCrawler.prototype.crawlPage = function crawlPage(page) {
+InternetCrawler.prototype.crawlPage = function(page) {
   var unparsedLinks = [];
   for (var i = 0; i < page.links.length; i++) {
     var link = page.links[i];
@@ -48,19 +51,16 @@ InternetCrawler.prototype.crawlPage = function crawlPage(page) {
       unparsedLinks.push(link);
     }
   }
-
-  unparsedLinks.forEach(link => {
-    this.visitPage(link);
-  });
+  return unparsedLinks;
 };
 
-InternetCrawler.prototype.skipLink = function skipLink(link) {
+InternetCrawler.prototype.skipLink = function(link) {
   if (this.pagesSkipped.indexOf(link) === -1) {
     this.pagesSkipped.push(link);
   }
 };
 
-InternetCrawler.prototype.isLinkParsed = function isLinkParsed(link) {
+InternetCrawler.prototype.isLinkParsed = function(link) {
   if (this.pagesVisited.indexOf(link) !== -1) {
     return true;
   } else if (this.pagesError.indexOf(link) !== -1) {
@@ -69,7 +69,7 @@ InternetCrawler.prototype.isLinkParsed = function isLinkParsed(link) {
   return false;
 };
 
-InternetCrawler.prototype.findPage = function findPage(address) {
+InternetCrawler.prototype.findPage = function(address) {
   return this.internet.pages.find(page => {
     return page.address === address;
   });
